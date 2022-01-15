@@ -22,6 +22,18 @@ app.get('/', (req, res) => {
     })
 })
 
+io.sockets.on('connection', socket => {
+    console.log('connected')
+
+    socket.on('send', data => {
+        console.log('message: ', data.msg)
+    })
+
+    socket.on('disconnect', () => {
+        console.log('disconnected')
+    })
+})
+
 server.listen(8080, () => {
     console.log('server on')
 })
