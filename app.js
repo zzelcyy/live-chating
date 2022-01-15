@@ -23,14 +23,22 @@ app.get('/', (req, res) => {
 })
 
 io.sockets.on('connection', socket => {
-    console.log('connected')
+    socket.on('newUser', name => {
+        console.log(`${name} has been connected`)
+        socket.name = name
+        io.sockets.emit('update', {type: 'connect', name: 'SERVER', message: `${name} has been connected`})
+    })
 
-    socket.on('send', data => {
-        console.log('message: ', data.msg)
+    socket.on('message', data => {
+        data.name = socket.name
+        console.log(data)
+        socket.broadcast.emit('update', data);
     })
 
     socket.on('disconnect', () => {
-        console.log('disconnected')
+        const name = socket.name
+        console.log(`${name} has been disconnected`)
+        socket.broadcast.emit('update', {type: 'disconnect', name: 'SERVER', message: `${name} has been disconnected`})
     })
 })
 

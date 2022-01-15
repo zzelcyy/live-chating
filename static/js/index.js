@@ -1,12 +1,36 @@
 const socket = io()
 
-socket.on('connect', function() {
-    const input = document.getElementById('chat-input')
-    input.value = 'connected'
+socket.on('connect', () => {
+    let name = prompt('Welcome!', '')
+    
+    if(!name) {
+        name = 'Unknown'
+    }
+
+    socket.emit('newUser', name)
+})
+
+socket.on('update', data => {
+    let chat = document.getElementById('chat-log')
+    let messageLog = document.createElement('div')
+    let node = document.createTextNode(`${data.name}: ${data.message}`)
+
+    messageLog.appendChild(node)
+    chat.appendChild(messageLog)
 })
 
 const send = () => {
-    const message = document.getElementById('chat-input').value
-    socket.emit('send', {msg: message})
-    message = ''
+    let message = document.getElementById('chat-input').value
+
+    console.log(message)
+
+    let chat = document.getElementById('chat-log')
+    let messageLog = document.createElement('div')
+    let node = document.createTextNode(message)
+
+    messageLog.appendChild(node)
+    chat.appendChild(messageLog)
+
+    socket.emit('message', {type: 'message', message: message})
+    document.getElementById('chat-input').value = ''
 }
